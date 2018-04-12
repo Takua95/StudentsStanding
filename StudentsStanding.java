@@ -5,31 +5,29 @@
 //StudentsStanding: Main File
 
 /*
- *This program informs the user of prices to ship packages based on zip code and
- *the weight of the package. 
+ * This program reads student info from files designated as students in good academic standing ("GoodBoys.txt"), and
+ * ones below good academic standing into "BadBoys.txt".  It can display the list of students read from the files to the
+ * user, and allows the user to add new students to the list read from files, and write to the correct file upon
+ * termination of program.
  */
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.util.stream.IntStream;
-import java.util.stream.DoubleStream;
+import java.io.FileWriter;
 
 public class StudentsStanding
 {
-	public static List<StudentInfo> students = new ArrayList<StudentInfo>();
+	private static List<StudentInfo> students = new ArrayList<StudentInfo>();
 
-    public static void main(String[] args) throws Exception, InterruptedException
+    public static void main(String[] args) throws InterruptedException, Exception
     {
 		ReadFromFile("GoodBoys");
 		ReadFromFile("BadBoys");
-		
+		Scanner scanner = new Scanner(System.in);
 		boolean exit = false;
         int selection;
 		String rawInput;
@@ -49,12 +47,12 @@ public class StudentsStanding
                 switch (selection)
                 { 
 					case 1:
+                        CLS();
 						AddStudents();
-						CLS();
 						break;
 					case 2:
+                        CLS();
 						PrintStudents();
-						CLS();
 						break;
 					case 3:
                         CLS();
@@ -62,6 +60,7 @@ public class StudentsStanding
                         break;
                     case 4:
                         CLS();
+                        WriteToFile();
                         System.out.print("\nGoodbye!");
                         Thread.sleep (2500);
                         exit = true;
@@ -96,36 +95,41 @@ public class StudentsStanding
     private static void CLS() throws IOException, InterruptedException 
 	{ new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor(); }
 
-	public static void About() throws InterruptedException
+    private static void pressAnyKeyToContinue() throws InterruptedException
+    {
+        Thread.sleep (2500);
+        System.out.println("Press Enter key to continue...");
+        try{ System.in.read(); }
+        catch(Exception e){}
+    }
+	private static void About() throws InterruptedException
     {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Why aren't you nosy...");
-        Thread.sleep (2500);
-        System.out.println("Press any key to continue...");
-        scanner.next();
+        pressAnyKeyToContinue();
     }	
 	
-	static void PrintStudents() 
+	private static void PrintStudents()
 	{
-		for (int i = 0; i < students.size(); i++)
-			System.out.println("\n" + 
-				students.get(i).getLastName() + ", " + students.get(i).getFirstName() + 
-				", ID: " + students.get(i).getID() + ", GPA: " + students.get(i).getGPA());
+        for (StudentInfo student : students)
+            System.out.println("\n" +
+                    student.getLastName() + ", " + student.getFirstName() +
+                    ", ID: " + student.getID() + ", GPA: " + student.getGPA());
 	}
 
-	static void AddStudents()
+	private static void AddStudents() throws InterruptedException
 	{
-		students.add.StudentsInfo();
+
+	    Scanner scanner = new Scanner(System.in);
+		students.add(new StudentInfo());
 		System.out.println("\nStudent Added!");
-		Thread.sleep (2500);
-        System.out.println("Press any key to continue...");
-        scanner.next();
+        pressAnyKeyToContinue();
 	}
 
-    static void ReadFromFile(String whichFile) throws FileNotFoundException
+    private static void ReadFromFile(String whichFile) throws FileNotFoundException
     {
-	String CD = "";
-	File file;
+        String CD = "";
+        File file;
 		try
 		{
 			CD = System.getProperty("user.dir");
@@ -134,18 +138,46 @@ public class StudentsStanding
 			while (scanner.hasNext())
 			{
 				String[] tokens = scanner.nextLine().split(";");
-				students.add(new StudentInfo(tokens[tokens.length - 4], tokens[tokens.length - 3], Integer.parseInt(tokens[tokens.length - 2]), Double.parseDouble(tokens[tokens.length - 1])));
+				students.add(new StudentInfo(
+				        tokens[tokens.length - 4],
+                        tokens[tokens.length - 3],
+                        Integer.parseInt(tokens[tokens.length - 2]),
+                        Double.parseDouble(tokens[tokens.length - 1])));
 			}
 		}
 		catch (FileNotFoundException ex)
 		{
 			System.out.println(
-				"\nFile not for Good Boys! Program Instability!\n" +
+				"\nFile not found for " + whichFile + "! Program Instability!\n" +
 				CD + "\\" + whichFile + ".txt");
 		}
     }
-    static void WriteToFile() throws FileNotFoundException
+    private static void WriteToFile() throws IOException
     {
+        try
+        {
 
+            FileWriter writerForGood = new FileWriter("GoodBoys.txt");
+            FileWriter writerForBad = new FileWriter("BadBoys.txt");
+            for (StudentInfo student : students)
+            {
+                if (student.getGPA() >= 1.5)
+                    writerForGood.write(student.getFirstName() + ";" +
+                                            student.getLastName() + ";" +
+                                            student.getID() + ";" +
+                                            student.getGPA() + String.format("%n"));
+                else
+                    writerForBad.write(student.getFirstName() + ";" +
+                                           student.getLastName() + ";" +
+                                           student.getID() + ";" +
+                                           student.getGPA() + String.format("%n"));
+            }
+            writerForGood.close();
+            writerForBad.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("No File!");
+        }
     }
 }

@@ -1,13 +1,12 @@
-import java.io.*;
 import java.util.Scanner;
 import java.lang.Integer;
 import java.lang.Double;
 public class StudentInfo
 {
-    protected String FirstName; 
-    protected String LastName;
-    protected int ID;
-    protected double GPA;
+    private String FirstName;
+    private String LastName;
+    private int ID;
+    private double GPA;
     
     public void setFirstName()
     { 
@@ -19,21 +18,21 @@ public class StudentInfo
     public void setLastName()
     { 
         Scanner input = new Scanner(System.in);
-        System.out.println("Please Enter " + this.FirstName + "\'s First Name: ");
+        System.out.println("Please Enter " + this.FirstName + "\'s Last Name: ");
         String LastName = input.nextLine();
         this.LastName = LastName; 
     }
     public void setID()
     { 
         Scanner input = new Scanner(System.in);
-        System.out.println("Please Enter " + this.FirstName + " " + this.LastName + "\'s ID: ");
+        System.out.println("Please Enter " + this.FirstName + " " + this.LastName + "\'s ID (Integer Only!): ");
         int ID = Integer.parseInt(input.nextLine());
         this.ID = ID; 
     }
     public void setGPA()
     { 
         Scanner input = new Scanner(System.in);
-        System.out.println("Please Enter " + this.FirstName + " " + this.LastName + "\'s GPA: ");
+        System.out.println("Please Enter " + this.FirstName + " " + this.LastName + "\'s GPA (Double Only!): ");
         double GPA = Double.parseDouble(input.nextLine());
         this.GPA = GPA; 
     }
